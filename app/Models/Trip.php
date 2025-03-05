@@ -10,14 +10,24 @@ class Trip extends Model
     use HasFactory;
 
     protected $fillable = [
-        'user_id', 'company_id', 'name', 'purpose', 
-        'start_date', 'end_date', 'status', 'total_cost'
+        'user_id',
+        'company_id',
+        'title',
+        'description',
+        'start_date',
+        'end_date',
+        'destination',
+        'purpose',
+        'status',
+        'approved_by',
+        'approved_at',
+        'rejection_reason',
     ];
 
     protected $casts = [
         'start_date' => 'date',
         'end_date' => 'date',
-        'total_cost' => 'decimal:2',
+        'approved_at' => 'datetime',
     ];
 
     public function user()
@@ -28,6 +38,16 @@ class Trip extends Model
     public function company()
     {
         return $this->belongsTo(Company::class);
+    }
+
+    public function approver()
+    {
+        return $this->belongsTo(User::class, 'approved_by');
+    }
+
+    public function expenses()
+    {
+        return $this->hasMany(Expense::class);
     }
 
     public function bookings()

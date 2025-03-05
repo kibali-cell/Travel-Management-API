@@ -10,14 +10,18 @@ return new class extends Migration
     {
         Schema::create('trips', function (Blueprint $table) {
             $table->id();
-            $table->foreignId('user_id')->constrained();
-            $table->foreignId('company_id')->constrained();
-            $table->string('name');
-            $table->text('purpose')->nullable();
+            $table->foreignId('user_id')->constrained()->onDelete('cascade');
+            $table->foreignId('company_id')->constrained()->onDelete('cascade');
+            $table->string('title');
+            $table->text('description')->nullable();
             $table->date('start_date');
             $table->date('end_date');
-            $table->string('status')->default('draft'); // draft, pending, approved, completed
-            $table->decimal('total_cost', 10, 2)->default(0);
+            $table->string('destination');
+            $table->string('purpose');
+            $table->enum('status', ['pending', 'approved', 'rejected', 'completed'])->default('pending');
+            $table->foreignId('approved_by')->nullable()->constrained('users');
+            $table->timestamp('approved_at')->nullable();
+            $table->text('rejection_reason')->nullable();
             $table->timestamps();
         });
     }
