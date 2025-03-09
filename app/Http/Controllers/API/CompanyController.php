@@ -64,6 +64,16 @@ class CompanyController extends Controller
         return response()->json(['company' => $company]);
     }
 
+    public function updateSettings(Request $request, Company $company)
+    {
+        $request->validate([
+            'settings' => 'required|array',
+        ]);
+
+        $company->update(['settings' => $request->settings]);
+        return response()->json($company);
+    }
+
     public function destroy(Company $company)
     {
         $company->delete();

@@ -16,6 +16,8 @@ class User extends Authenticatable
         'email',
         'password',
         'company_id',
+        'department_id',
+        'manager_id',
         'avatar',
         'phone',
         'address',
@@ -64,5 +66,15 @@ class User extends Authenticatable
     public function isEmployee()
     {
         return $this->hasRole('employee');
+    }
+
+    public function manager()
+    {
+        return $this->belongsTo(User::class, 'manager_id');
+    }
+
+    public function subordinates()
+    {
+        return $this->hasMany(User::class, 'manager_id');
     }
 }

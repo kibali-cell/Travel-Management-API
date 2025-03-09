@@ -81,10 +81,17 @@ class AuthController extends Controller
         ]);
     }
 
+    // public function user(Request $request)
+    // {
+    //     return response()->json([
+    //         'user' => $request->user()->load('roles', 'company')
+    //     ]);
+    // }
+
     public function user(Request $request)
     {
-        return response()->json([
-            'user' => $request->user()->load('roles', 'company')
-        ]);
+        $user = $request->user()->load('roles', 'company');
+        return response()->json(['user' => $user]);
     }
+
 }

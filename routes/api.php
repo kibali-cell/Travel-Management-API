@@ -1,6 +1,10 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use App\Http\Controllers\API\DepartmentController;
+use App\Http\Controllers\API\CompanyController;
+use App\Http\Controllers\API\BookingController;
+use App\Http\Controllers\API\ApprovalController;
 
 // Public routes
 Route::post('/login', [\App\Http\Controllers\API\AuthController::class, 'login'])->name('login');
@@ -19,9 +23,20 @@ Route::middleware('auth:sanctum')->group(function () {
     // Admin routes
     Route::middleware('role:admin')->group(function () {
         Route::apiResource('users', \App\Http\Controllers\API\UserController::class);
-        Route::apiResource('companies', \App\Http\Controllers\API\CompanyController::class);
-        Route::apiResource('policies', \App\Http\Controllers\API\PolicyController::class);
+        // Route::apiResource('companies', \App\Http\Controllers\API\CompanyController::class);
+        Route::apiResource('departments', DepartmentController::class);
+        Route::put('companies/{company}/settings', [CompanyController::class, 'updateSettings']);
+        
     });
+
+    
+    Route::apiResource('policies', \App\Http\Controllers\API\PolicyController::class);
+    Route::post('/approvals', [App\Http\Controllers\API\ApprovalController::class, 'store']);
+
+    Route::apiResource('bookings', BookingController::class);
+    Route::apiResource('approvals', ApprovalController::class)->only(['update']);
+
+    Route::apiResource('companies', \App\Http\Controllers\API\CompanyController::class);
     
     // Trip routes (both admin and employee can access)
     Route::apiResource('trips', \App\Http\Controllers\API\TripController::class);
@@ -39,3 +54,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile/language', [UserProfileController::class, 'updateLanguage']);
     Route::put('/profile/notifications', [UserProfileController::class, 'updateNotificationPreferences']);
 });
+
+
+    

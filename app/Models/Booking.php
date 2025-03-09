@@ -10,17 +10,26 @@ class Booking extends Model
     use HasFactory;
 
     protected $fillable = [
-        'trip_id', 'type', 'status', 'is_policy_compliant', 
-        'compliance_notes', 'cost'
+        'user_id', 'trip_id', 'type', 'status', 'booking_date', 'details', 'cost'
     ];
 
     protected $casts = [
-        'is_policy_compliant' => 'boolean',
+        'details' => 'array',  // JSON field for flexible storage
         'cost' => 'decimal:2',
     ];
+
+    public function user()
+    {
+        return $this->belongsTo(User::class);
+    }
 
     public function trip()
     {
         return $this->belongsTo(Trip::class);
+    }
+
+    public function approvals()
+    {
+        return $this->hasMany(Approval::class);
     }
 }

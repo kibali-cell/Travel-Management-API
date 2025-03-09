@@ -14,8 +14,12 @@ class UserProfileController extends Controller
 {
     public function show()
     {
-        $user = Auth::user()->load('roles', 'company');
-        return response()->json($user);
+        // $user = Auth::user()->load('roles', 'company');
+        // return response()->json($user);
+
+        $user = User::with('roles', 'company')->find($id);
+return response()->json($user);
+
     }
     
     public function update(Request $request)
