@@ -18,6 +18,21 @@ class BookingController extends Controller
         $this->policyService = $policyService;
     }
 
+    public function index(Request $request)
+    {
+        $query = Trip::query();
+
+        if ($request->has('status') && $request->status !== '') {
+            $query->where('status', $request->status);
+        }
+
+        if ($request->has('search')) {
+            $query->where('title', 'like', '%' . $request->search . '%');
+        }
+
+        return TripResource::collection($query->get());
+    }
+
     public function store(Request $request)
     {
         $user = Auth::user();

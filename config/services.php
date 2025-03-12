@@ -35,4 +35,18 @@ return [
         ],
     ],
 
+    'travelduqa' => [
+        'base_url' => env('TRAVELDUQA_BASE_URL', 'https://www.app.travelduqa.africa'),
+        'auth_endpoint' => '/connect/auth/token', // Full auth path
+        'offers_endpoint' => '/connect/getOffers', // Full offers path
+        'api_key' => env('TRAVELDUQA_API_KEY'),
+        'api_secret' => env('TRAVELDUQA_API_SECRET'),
+    ],
+    
+    'amadeus' => [
+        'base_url' => env('AMADEUS_BASE_URL', 'https://test.api.amadeus.com'),
+        'api_key' => env('AMADEUS_API_KEY'),
+        'api_secret' => env('AMADEUS_API_SECRET'),
+    ],
+
 ];

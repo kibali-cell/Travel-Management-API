@@ -5,6 +5,8 @@ use App\Http\Controllers\API\DepartmentController;
 use App\Http\Controllers\API\CompanyController;
 use App\Http\Controllers\API\BookingController;
 use App\Http\Controllers\API\ApprovalController;
+use App\Http\Controllers\API\UserProfileController;
+use App\Http\Controllers\ApiTestController;
 
 // Public routes
 Route::post('/login', [\App\Http\Controllers\API\AuthController::class, 'login'])->name('login');
@@ -53,7 +55,23 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile/password', [UserProfileController::class, 'updatePassword']);
     Route::put('/profile/language', [UserProfileController::class, 'updateLanguage']);
     Route::put('/profile/notifications', [UserProfileController::class, 'updateNotificationPreferences']);
+
+    Route::get('/flights/search', [App\Http\Controllers\API\FlightController::class, 'search']);
+    Route::post('/flights/search', [App\Http\Controllers\API\FlightController::class, 'search']);
+    Route::post('/flights/book', [App\Http\Controllers\API\FlightController::class, 'book']);
+
+    // Route::get('/hotels/search', [App\Http\Controllers\API\HotelController::class, 'search']);
+
+    Route::post('/hotels/book', [App\Http\Controllers\API\HotelController::class, 'book']);
+    Route::get('/hotels/offers', [App\Http\Controllers\API\HotelController::class, 'getOffersByHotelIds']);
+
+            Route::post('/notifications/send', [App\Http\Controllers\API\NotificationController::class, 'sendEmail']);
+       
+            Route::get('/test/amadeus', [ApiTestController::class, 'testAmadeus']);
+            Route::get('/test/travelduqa', [ApiTestController::class, 'testTravelDuqa']);
 });
 
+
+Route::get('/hotels/search', [App\Http\Controllers\API\HotelController::class, 'searchByCity']);
 
     

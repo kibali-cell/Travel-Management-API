@@ -4,8 +4,74 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#installing-dependencies",
         "This file is @generated automatically"
     ],
-    "content-hash": "85c1d2065f70e38b0d6bf66559fb13c5",
+    "content-hash": "66900765510d3bc0a6a6097ea0ad3659",
     "packages": [
+        {
+            "name": "amadeus4dev/amadeus-php",
+            "version": "0.3.0",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/amadeus4dev/amadeus-php.git",
+                "reference": "f7249b5659976ee838dee0222497e547937fba93"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/amadeus4dev/amadeus-php/zipball/f7249b5659976ee838dee0222497e547937fba93",
+                "reference": "f7249b5659976ee838dee0222497e547937fba93",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "ext-json": "*",
+                "php": ">=7.4.0"
+            },
+            "require-dev": {
+                "friendsofphp/php-cs-fixer": "^3.8",
+                "phpstan/phpstan": "^1.5.2",
+                "phpunit/phpunit": "^9.5.19"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Amadeus\\": "src/",
+                    "Amadeus\\Client\\": "src/client/",
+                    "Amadeus\\Travel\\": "src/travel/",
+                    "Amadeus\\Airport\\": "src/airport/",
+                    "Amadeus\\Booking\\": "src/booking/",
+                    "Amadeus\\Schedule\\": "src/schedule/",
+                    "Amadeus\\Shopping\\": "src/shopping/",
+                    "Amadeus\\Resources\\": "src/resources/",
+                    "Amadeus\\DutyOfCare\\": "src/dutyOfCare/",
+                    "Amadeus\\Exceptions\\": "src/exceptions/",
+                    "Amadeus\\EReputation\\": "src/eReputation/",
+                    "Amadeus\\ReferenceData\\": "src/referenceData/",
+                    "Amadeus\\Travel\\Predictions\\": "src/travel/predictions/",
+                    "Amadeus\\Airport\\Predictions\\": "src/airport/predictions/",
+                    "Amadeus\\DutyOfCare\\Diseases\\": "src/dutyOfCare/diseases/",
+                    "Amadeus\\Shopping\\Activities\\": "src/shopping/activities/",
+                    "Amadeus\\Shopping\\Availability\\": "src/shopping/availability/",
+                    "Amadeus\\Shopping\\FlightOffers\\": "src/shopping/flightOffers/",
+                    "Amadeus\\ReferenceData\\Locations\\": "src/referenceData/locations/",
+                    "Amadeus\\ReferenceData\\Locations\\Hotels\\": "src/referenceData/locations/hotels/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Amadeus for Developers",
+                    "email": "developers@amadeus.com"
+                }
+            ],
+            "description": "PHP library for the Amadeus Self-Service APIs",
+            "support": {
+                "issues": "https://github.com/amadeus4dev/amadeus-php/issues",
+                "source": "https://github.com/amadeus4dev/amadeus-php/tree/0.3.0"
+            },
+            "time": "2022-08-08T08:41:45+00:00"
+        },
         {
             "name": "brick/math",
             "version": "0.12.3",
