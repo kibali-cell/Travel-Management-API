@@ -20,33 +20,43 @@ class HotelController extends Controller
         $this->amadeusService = $amadeusService;
     }
 
+    // This method is used by the search form to fetch a basic hotel list, then enrich it.
     public function searchByCity(Request $request)
-{
-    $validator = Validator::make($request->all(), [
-        'city_code' => 'required|string|size:3'
-    ]);
-
-    if ($validator->fails()) {
-        return response()->json(['errors' => $validator->errors()], 422);
-    }
-
-    try {
-        // Call the service method to get the hotel list by city
-        $hotelList = $this->amadeusService->getHotelListByCity([
-            'city_code' => $request->city_code
+    {
+        $validator = Validator::make($request->all(), [
+            'city_code' => 'required|string|size:3'
         ]);
 
-        return response()->json([
-            'hotel_list' => $hotelList
-        ]);
-    } catch (\Exception $e) {
-        return response()->json([
-            'message' => 'Hotel search failed',
-            'error'   => $e->getMessage()
-        ], 500);
-    }
-}
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
 
+        try {
+            // Get basic hotel list by city
+            $hotelList = $this->amadeusService->getHotelListByCity([
+                'city_code' => $request->city_code
+            ]);
+            
+            // Enrich the basic data with sentiments and photos
+            // $enrichedData = $this->amadeusService->enrichHotelData($hotelList);
+
+            $enrichedData = $this->amadeusService->searchHotelsByCity([
+                'city_code' => $request->city_code,
+                'check_in' => now()->format('Y-m-d'),    // Add required params
+                'check_out' => now()->addDays(3)->format('Y-m-d'),
+                'adults' => 1                            // Default value
+            ]);
+
+            return response()->json([
+                'hotel_list' => $enrichedData
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Hotel search failed',
+                'error'   => $e->getMessage()
+            ], 500);
+        }
+    }
     
     public function search(Request $request)
     {
@@ -55,7 +65,6 @@ class HotelController extends Controller
             'check_in' => 'required|date|after_or_equal:today',
             'check_out' => 'required|date|after:check_in',
             'adults' => 'required|integer|min:1',
-            // other validations...
             'trip_id' => 'nullable|exists:trips,id'
         ]);
     
@@ -64,7 +73,6 @@ class HotelController extends Controller
         }
     
         try {
-            // Use the new searchHotelsByCity method
             $results = $this->amadeusService->searchHotelsByCity([
                 'city_code' => $request->city_code,
                 'check_in' => $request->check_in,
@@ -72,7 +80,6 @@ class HotelController extends Controller
                 'adults' => $request->adults
             ]);
     
-            // Cache the search results for later use in booking
             $cacheKey = 'hotel_search_' . md5(json_encode($results));
             \Cache::put($cacheKey, $results, now()->addHours(1));
     
@@ -87,7 +94,6 @@ class HotelController extends Controller
             ], 500);
         }
     }
-    
     
     public function book(Request $request)
     {
@@ -113,7 +119,6 @@ class HotelController extends Controller
         }
         
         try {
-            // Retrieve the cached search results
             $searchResults = \Cache::get($request->search_id);
             if (!$searchResults) {
                 return response()->json([
@@ -121,7 +126,6 @@ class HotelController extends Controller
                 ], 400);
             }
             
-            // Find the selected hotel offer
             $selectedOffer = null;
             foreach ($searchResults['data'] as $hotel) {
                 foreach ($hotel['offers'] as $offer) {
@@ -139,7 +143,6 @@ class HotelController extends Controller
                 ], 400);
             }
             
-            // Format booking data for Amadeus API
             $bookingData = [
                 'data' => [
                     'offerId' => $request->offer_id,
@@ -165,13 +168,9 @@ class HotelController extends Controller
                 ]
             ];
             
-            // Call the Amadeus service to book the hotel
             $bookingResult = $this->amadeusService->bookHotel($bookingData);
-            
-            // Get the trip
             $trip = Trip::findOrFail($request->trip_id);
             
-            // Save booking details to the database
             $hotelBooking = new HotelBooking();
             $hotelBooking->trip_id = $request->trip_id;
             $hotelBooking->user_id = auth()->id();
@@ -203,18 +202,17 @@ class HotelController extends Controller
     
     private function detectCardType($cardNumber)
     {
-        // Simplified card type detection
         $firstDigit = substr($cardNumber, 0, 1);
         $firstTwoDigits = substr($cardNumber, 0, 2);
         
         if ($firstDigit === '4') {
-            return 'VI'; // Visa
+            return 'VI';
         } elseif (in_array($firstTwoDigits, ['51', '52', '53', '54', '55'])) {
-            return 'MC'; // MasterCard
+            return 'MC';
         } elseif (in_array($firstTwoDigits, ['34', '37'])) {
-            return 'AX'; // American Express
+            return 'AX';
         } else {
-            return 'CA'; // Default to generic card
+            return 'CA';
         }
     }
 }

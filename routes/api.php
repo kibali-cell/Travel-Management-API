@@ -35,7 +35,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::apiResource('policies', \App\Http\Controllers\API\PolicyController::class);
     Route::post('/approvals', [App\Http\Controllers\API\ApprovalController::class, 'store']);
 
-    Route::apiResource('bookings', BookingController::class);
     Route::apiResource('approvals', ApprovalController::class)->only(['update']);
 
     Route::apiResource('companies', \App\Http\Controllers\API\CompanyController::class);
