@@ -55,8 +55,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::put('/profile/language', [UserProfileController::class, 'updateLanguage']);
     Route::put('/profile/notifications', [UserProfileController::class, 'updateNotificationPreferences']);
 
-    Route::get('/flights/search', [App\Http\Controllers\API\FlightController::class, 'search']);
-    Route::post('/flights/search', [App\Http\Controllers\API\FlightController::class, 'search']);
+    
     Route::post('/flights/book', [App\Http\Controllers\API\FlightController::class, 'book']);
 
     // Route::get('/hotels/search', [App\Http\Controllers\API\HotelController::class, 'search']);
@@ -72,5 +71,6 @@ Route::middleware('auth:sanctum')->group(function () {
 
 
 Route::get('/hotels/search', [App\Http\Controllers\API\HotelController::class, 'searchByCity']);
-
+Route::get('/flights/search', [App\Http\Controllers\API\FlightController::class, 'search']);
+Route::post('/flights/search', [App\Http\Controllers\API\FlightController::class, 'search']);
     

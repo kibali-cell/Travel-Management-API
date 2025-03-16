@@ -14,51 +14,48 @@ class TravelDuqaService
         $this->config = config('services.travelduqa');
     }
 
-    private function authenticate()
-    {
-        $response = Http::asForm()->post($this->config['base_url'].$this->config['auth_endpoint'], [
-            'grant_type' => 'client_credentials',
-            'client_id' => $this->config['api_key'],
-            'client_secret' => $this->config['api_secret']
-        ]);
-
-        if (!$response->successful()) {
-            \Log::error('TravelDuqa Auth Failed', [
-                'status' => $response->status(),
-                'response' => $response->json()
-            ]);
-            throw new \Exception('Authentication failed: '.$response->body());
-        }
-
-        $data = $response->json();
-        Cache::put('travelduqa_token', $data['access_token'], now()->addSeconds($data['expires_in'] - 60));
-        
-        return $data['access_token'];
-    }
-
+    /**
+     * Get the static access token from config (with optional caching)
+     *
+     * @return string
+     */
     private function getAccessToken()
     {
         if (Cache::has('travelduqa_token')) {
             return Cache::get('travelduqa_token');
         }
-        return $this->authenticate();
+        
+        // Since the token is static, we simply use the configured token
+        $token = $this->config['token'];
+        // Optionally cache the token for a day (or any desired duration)
+        Cache::put('travelduqa_token', $token, now()->addHours(24));
+        
+        return $token;
     }
 
+    /**
+     * Search flights using the TravelDuqa API.
+     *
+     * @param array $params
+     * @return array
+     */
     public function searchFlights($params)
     {
         $token = $this->getAccessToken();
         
         $response = Http::withHeaders([
-            'Authorization' => 'Bearer '.$token,
-            'Content-Type' => 'application/json'
-        ])->post($this->config['base_url'].$this->config['offers_endpoint'], $params);
+            'Authorization' => 'Bearer ' . $token,
+            'Content-Type' => 'application/json',
+            'Accept' => 'application/json',
+            'Travelduqa-Version' => 'v1'
+        ])->post($this->config['base_url'] . $this->config['offers_endpoint'], $params);
 
         if (!$response->successful()) {
-            \Log::error('Flight Search Failed', [
+            \Log::error('API Request Failed', [
                 'status' => $response->status(),
                 'response' => $response->json()
             ]);
-            throw new \Exception('Flight search failed: '.$response->body());
+            throw new \Exception('API Error: ' . $response->body());
         }
 
         return $response->json();
