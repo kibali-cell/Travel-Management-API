@@ -20,7 +20,7 @@ class HotelController extends Controller
         $this->amadeusService = $amadeusService;
     }
 
-    // This method is used by the search form to fetch a basic hotel list, then enrich it.
+    
     public function searchByCity(Request $request)
     {
         $validator = Validator::make($request->all(), [
