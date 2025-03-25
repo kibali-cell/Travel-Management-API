@@ -75,4 +75,5 @@ Route::get('/flights/search', [App\Http\Controllers\API\FlightController::class,
 Route::post('/flights/search', [App\Http\Controllers\API\FlightController::class, 'search']);
 
 Route::post('/flights/resolve_iata', [App\Http\Controllers\API\FlightController::class, 'resolveIataCode']);
-    
+
+Route::get('/hotels/autocomplete', [App\Http\Controllers\API\HotelController::class, 'autocomplete']);

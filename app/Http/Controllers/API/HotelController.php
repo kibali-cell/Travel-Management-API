@@ -19,7 +19,6 @@ class HotelController extends Controller
     {
         $this->amadeusService = $amadeusService;
     }
-
     
     public function searchByCity(Request $request)
     {
@@ -32,19 +31,11 @@ class HotelController extends Controller
         }
 
         try {
-            // Get basic hotel list by city
-            $hotelList = $this->amadeusService->getHotelListByCity([
-                'city_code' => $request->city_code
-            ]);
-            
-            // Enrich the basic data with sentiments and photos
-            // $enrichedData = $this->amadeusService->enrichHotelData($hotelList);
-
             $enrichedData = $this->amadeusService->searchHotelsByCity([
                 'city_code' => $request->city_code,
-                'check_in' => now()->format('Y-m-d'),    // Add required params
-                'check_out' => now()->addDays(3)->format('Y-m-d'),
-                'adults' => 1                            // Default value
+                'check_in' => now()->addDays(7)->format('Y-m-d'),
+                'check_out' => now()->addDays(10)->format('Y-m-d'),
+                'adults' => 1
             ]);
 
             return response()->json([
@@ -53,7 +44,7 @@ class HotelController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Hotel search failed',
-                'error'   => $e->getMessage()
+                'error' => $e->getMessage()
             ], 500);
         }
     }
@@ -90,7 +81,31 @@ class HotelController extends Controller
         } catch (\Exception $e) {
             return response()->json([
                 'message' => 'Hotel search failed',
-                'error'   => $e->getMessage()
+                'error' => $e->getMessage()
+            ], 500);
+        }
+    }
+
+    public function autocomplete(Request $request)
+    {
+        // Validate the keyword parameter
+        $validator = Validator::make($request->query(), [
+            'keyword' => 'required|string|min:3'
+        ]);
+
+        if ($validator->fails()) {
+            return response()->json(['errors' => $validator->errors()], 422);
+        }
+
+        try {
+            $suggestions = $this->amadeusService->getHotelAutocomplete($request->query('keyword'));
+            return response()->json([
+                'suggestions' => $suggestions['data']
+            ]);
+        } catch (\Exception $e) {
+            return response()->json([
+                'message' => 'Failed to retrieve suggestions',
+                'error' => $e->getMessage()
             ], 500);
         }
     }
