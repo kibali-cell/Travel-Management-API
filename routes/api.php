@@ -39,13 +39,13 @@ Route::middleware('auth:sanctum')->group(function () {
 
     Route::apiResource('companies', \App\Http\Controllers\API\CompanyController::class);
     
-    // Trip routes (both admin and employee can access)
+    
     Route::apiResource('trips', \App\Http\Controllers\API\TripController::class);
     
-    // Booking routes (both admin and employee can access)
+    
     Route::apiResource('bookings', \App\Http\Controllers\API\BookingController::class);
 
-    // Expense routes (both admin and employee can access)
+    
     Route::apiResource('expenses', \App\Http\Controllers\API\ExpenseController::class);
 
     // Profile routes

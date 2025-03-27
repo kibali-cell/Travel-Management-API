@@ -23,39 +23,35 @@ class FlightController extends Controller
      * @return string
      */
     private function resolveIataCode($input)
-{
-    // If input is already a 3-letter code, assume it's an IATA code
-    if (strlen($input) === 3 && ctype_upper($input)) {
-        return strtoupper($input);
+    {
+        if (strlen($input) === 3 && ctype_upper($input)) {
+            return strtoupper($input);
+        }
+
+        $locations = $this->travelDuqaService->getLocations();
+
+        
+        $location = array_filter($locations, function ($loc) use ($input) {
+            return strcasecmp($loc['city'], $input) === 0 ||
+                strcasecmp($loc['iata'], $input) === 0 ||
+                (isset($loc['name']) && strcasecmp($loc['name'], $input) === 0);
+        });
+
+        $location = reset($location); // Get first match
+
+        if ($location) {
+            return $location['iata'];
+        }
+
+        throw new \Exception("Invalid city or IATA code: $input");
     }
-
-    // Fetch locations
-    $locations = $this->travelDuqaService->getLocations();
-
-    // Search by city name, IATA code, or full airport name (case-insensitive)
-    $location = array_filter($locations, function ($loc) use ($input) {
-        return strcasecmp($loc['city'], $input) === 0 ||
-               strcasecmp($loc['iata'], $input) === 0 ||
-               (isset($loc['name']) && strcasecmp($loc['name'], $input) === 0);
-    });
-
-    $location = reset($location); // Get first match
-
-    if ($location) {
-        return $location['iata'];
-    }
-
-    // If no match, throw validation error
-    throw new \Exception("Invalid city or IATA code: $input");
-}
 
     public function search(Request $request)
     {
-        // Relaxed validation to accept city names or IATA codes
         $validator = Validator::make($request->all(), [
             'flight_type' => 'required|in:oneway,return',
-            'origin' => 'required|string', // No strict size:3 check yet
-            'destination' => 'required|string', // No strict size:3 check yet
+            'origin' => 'required|string', 
+            'destination' => 'required|string', 
             'departure_date' => 'required|date|after_or_equal:today',
             'return_date' => 'nullable|required_if:flight_type,return|date|after_or_equal:departure_date',
             'adults' => 'required|integer|min:1|max:9',
@@ -70,11 +66,10 @@ class FlightController extends Controller
         }
 
         try {
-            // Resolve origin and destination to IATA codes
             $originIata = $this->resolveIataCode($request->origin);
             $destinationIata = $this->resolveIataCode($request->destination);
 
-            // Validate resolved IATA codes
+            
             $iataValidator = Validator::make(
                 ['origin' => $originIata, 'destination' => $destinationIata],
                 [
@@ -91,8 +86,8 @@ class FlightController extends Controller
             $journeyParams = [
                 'flight_type' => $request->flight_type,
                 'cabin_class' => $request->cabin_class ?? 'economy',
-                'depature' => $originIata, // Use resolved IATA
-                'arrival' => $destinationIata, // Use resolved IATA
+                'depature' => $originIata, 
+                'arrival' => $destinationIata, 
                 'depature_date' => $request->departure_date,
                 'adult_count' => $request->adults,
                 'child_count' => $request->children ?? 0,

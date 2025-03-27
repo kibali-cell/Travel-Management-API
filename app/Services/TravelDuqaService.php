@@ -97,4 +97,6 @@ class TravelDuqaService
 
         return $response->json();
     }
+
+   
 }

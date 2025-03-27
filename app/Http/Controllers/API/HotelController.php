@@ -88,7 +88,6 @@ class HotelController extends Controller
 
     public function autocomplete(Request $request)
     {
-        // Validate the keyword parameter
         $validator = Validator::make($request->query(), [
             'keyword' => 'required|string|min:3'
         ]);
@@ -142,6 +141,7 @@ class HotelController extends Controller
             }
             
             $selectedOffer = null;
+            $selectedHotel = null;
             foreach ($searchResults['data'] as $hotel) {
                 foreach ($hotel['offers'] as $offer) {
                     if ($offer['id'] === $request->offer_id) {
@@ -184,6 +184,11 @@ class HotelController extends Controller
             ];
             
             $bookingResult = $this->amadeusService->bookHotel($bookingData);
+            if (($bookingResult['data']['status'] ?? 'FAILED') !== 'CONFIRMED') {
+                \Log::warning('Booking not confirmed', ['result' => $bookingResult]);
+                return response()->json(['message' => 'Booking could not be confirmed', 'details' => $bookingResult], 400);
+            }
+
             $trip = Trip::findOrFail($request->trip_id);
             
             $hotelBooking = new HotelBooking();
@@ -194,7 +199,7 @@ class HotelController extends Controller
             $hotelBooking->status = $bookingResult['data']['status'];
             $hotelBooking->hotel_name = $selectedHotel['hotel']['name'];
             $hotelBooking->hotel_code = $selectedHotel['hotel']['hotelId'];
-            $hotelBooking->city_code = $request->city_code;
+            $hotelBooking->city_code = $selectedHotel['cityCode'] ?? $request->input('city_code');
             $hotelBooking->check_in = $request->check_in;
             $hotelBooking->check_out = $request->check_out;
             $hotelBooking->booking_data = json_encode($bookingResult);
@@ -208,6 +213,7 @@ class HotelController extends Controller
             ]);
             
         } catch (\Exception $e) {
+            \Log::error('Booking error: ' . $e->getMessage());
             return response()->json([
                 'message' => 'Hotel booking failed',
                 'error' => $e->getMessage()

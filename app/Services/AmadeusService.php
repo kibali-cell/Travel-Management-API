@@ -149,7 +149,26 @@ class AmadeusService
         
         return $response->json();
     }
-    
+
+    public function getHotelDetails($hotelId)
+    {
+        $token = $this->getAccessToken();
+        $response = Http::withToken($token)
+            ->get("{$this->baseUrl}/v1/reference-data/locations/hotels/by-hotels", [
+                'hotelIds' => $hotelId
+            ]);
+
+        if (!$response->successful()) {
+            \Log::warning('Failed to get hotel details', [
+                'status' => $response->status(),
+                'response' => $response->json()
+            ]);
+            return null;
+        }
+
+        return $response->json()['data'][0] ?? null;
+    }
+
     public function getHotelPhotos($hotelId, $hotelName)
     {
         $imageId = crc32($hotelId) % 1000;
@@ -163,7 +182,7 @@ class AmadeusService
             ]
         ];
     }
-    
+
     public function enrichHotelData($hotelList)
     {
         $hotelIds = array_column($hotelList['data'] ?? [], 'hotelId');
@@ -174,7 +193,6 @@ class AmadeusService
         
         try {
             $sentiments = $this->getHotelSentiments($hotelIds);
-            
             $ratingsByHotelId = [];
             foreach ($sentiments['data'] ?? [] as $sentiment) {
                 $ratingsByHotelId[$sentiment['hotelId']] = [
@@ -187,18 +205,26 @@ class AmadeusService
             foreach ($hotelList['data'] as &$hotel) {
                 $hotelId = $hotel['hotelId'];
                 
+                // Fetch detailed hotel info (amenities, description)
+                $hotelDetails = $this->getHotelDetails($hotelId);
+                if ($hotelDetails) {
+                    $hotel['amenities'] = $hotelDetails['amenities'] ?? $this->getDefaultAmenities();
+                    $hotel['description'] = $hotelDetails['description']['text'] ?? 'No description available';
+                } else {
+                    $hotel['amenities'] = $this->getDefaultAmenities();
+                    $hotel['description'] = 'No description available';
+                }
+
+                $hotel['images'] = $this->getHotelPhotos($hotelId, $hotel['name']);
+                
                 $hotel['ratings'] = $ratingsByHotelId[$hotelId] ?? [
                     'overallRating' => 4.0,
                     'numberOfReviews' => 0,
                     'sentiments' => []
                 ];
-                
-                $hotel['images'] = $this->getHotelPhotos($hotelId, $hotel['name']);
-                
+
                 $rating = $hotel['ratings']['overallRating'] ?? 4.0;
                 $hotel['stars'] = min(5, max(1, round($rating / 2)));
-                
-                $hotel['amenities'] = $this->getDefaultAmenities();
             }
             
             return $hotelList;
@@ -278,4 +304,4 @@ class AmadeusService
         }
         return $response->json();
     }
-}
+} 
