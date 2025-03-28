@@ -7,7 +7,6 @@ use Illuminate\Foundation\Auth\User as Authenticatable;
 use Illuminate\Notifications\Notifiable;
 use Laravel\Sanctum\HasApiTokens;
 
-
 class User extends Authenticatable
 {
     use HasApiTokens, HasFactory, Notifiable;
@@ -77,5 +76,19 @@ class User extends Authenticatable
     public function subordinates()
     {
         return $this->hasMany(User::class, 'manager_id');
+    }
+
+    // Add this method to assign a role
+    public function assignRole($role)
+    {
+        if (is_string($role)) {
+            $role = \App\Models\Role::where('slug', $role)->first();
+        }
+
+        if ($role) {
+            $this->roles()->syncWithoutDetaching($role->id);
+        }
+
+        return $this;
     }
 }

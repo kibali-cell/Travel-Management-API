@@ -26,7 +26,7 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::get('/user', [\App\Http\Controllers\API\AuthController::class, 'user']);
 
     // Employee Routes (Accessible to employee, travel_admin, and super_admin)
-    Route::middleware('role:employee|travel_admin|super_admin')->group(function () {
+    Route::middleware('role:employee,travel_admin,super_admin')->group(function () {
         // Profile Management
         Route::get('/profile', [UserProfileController::class, 'show']);
         Route::put('/profile', [UserProfileController::class, 'update']);

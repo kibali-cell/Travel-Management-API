@@ -17,20 +17,22 @@ class CheckRole
      * @return mixed
      */
     public function handle(Request $request, Closure $next, ...$roles)
-    {
-        if (!Auth::check()) {
-            return response()->json(['message' => 'Unauthorized'], 401);
-        }
-
-        $user = Auth::user();
-        
-        foreach ($roles as $role) {
-            // Check if user has the role
-            if ($user->hasRole($role)) {
-                return $next($request);
-            }
-        }
-        
-        return response()->json(['message' => 'You do not have permission to access this resource'], 403);
+{
+    if (!Auth::check()) {
+        return response()->json(['message' => 'Unauthorized'], 401);
     }
+
+    $user = Auth::user();
+    $userRoles = $user->roles()->pluck('slug')->toArray();
+    \Log::debug('Authenticated user roles: ' . implode(',', $userRoles));
+    
+    foreach ($roles as $role) {
+        if ($user->hasRole($role)) {
+            return $next($request);
+        }
+    }
+    
+    return response()->json(['message' => 'You do not have permission to access this resource'], 403);
+}
+
 }

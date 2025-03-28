@@ -43,7 +43,7 @@ class AuthController extends Controller
     
             // Ensure the role exists with both name and slug
             $displayName = ucwords(str_replace('_', ' ', $request->role)); // e.g., "Travel Admin"
-            $role = \Spatie\Permission\Models\Role::firstOrCreate(
+            $role = Role::firstOrCreate(
                 ['slug' => $request->role],
                 ['name' => $displayName, 'slug' => $request->role, 'description' => "$displayName role"]
             );
