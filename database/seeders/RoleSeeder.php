@@ -9,15 +9,27 @@ class RoleSeeder extends Seeder
 {
     public function run()
     {
+        // Create Super Admin role
         Role::updateOrCreate(
-            ['slug' => 'admin'],
+            ['slug' => 'super_admin'],
+            [
+                'name' => 'Super Admin',
+                'slug' => 'super_admin',
+                'description' => 'System administrator with full permissions'
+            ]
+        );
+
+        // Create Travel Admin role
+        Role::updateOrCreate(
+            ['slug' => 'travel_admin'],
             [
                 'name' => 'Travel Admin',
-                'slug' => 'admin',
+                'slug' => 'travel_admin',
                 'description' => 'Company administrator who manages travel policies'
             ]
         );
 
+        // Create Employee role
         Role::updateOrCreate(
             ['slug' => 'employee'],
             [

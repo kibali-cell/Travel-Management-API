@@ -3,6 +3,7 @@
 namespace App\Http\Controllers\API;
 
 use App\Http\Controllers\Controller;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Hash;
@@ -14,12 +15,8 @@ class UserProfileController extends Controller
 {
     public function show()
     {
-        // $user = Auth::user()->load('roles', 'company');
-        // return response()->json($user);
-
-        $user = User::with('roles', 'company')->find($id);
-return response()->json($user);
-
+        $user = Auth::user()->load('roles', 'company');
+        return response()->json($user);
     }
     
     public function update(Request $request)
@@ -36,13 +33,15 @@ return response()->json($user);
                 'max:255',
                 Rule::unique('users')->ignore($user->id),
             ],
-            'avatar'                => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
-            'phone'                 => 'nullable|string|max:20',
-            'address'               => 'nullable|string|max:255',
-            'emergency_contact_name'=> 'nullable|string|max:255',
-            'emergency_contact_phone'=> 'nullable|string|max:20',
+            'avatar'                  => 'nullable|file|mimes:jpeg,png,jpg|max:2048',
+            'phone'                   => 'nullable|string|max:20',
+            'address'                 => 'nullable|string|max:255',
+            'emergency_contact_name'  => 'nullable|string|max:255',
+            'emergency_contact_phone' => 'nullable|string|max:20',
+            'sex'                     => 'nullable|string|in:Male,Female',
+            'date_of_birth'           => 'nullable|date|before:today',
         ]);
-
+    
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
@@ -59,15 +58,16 @@ return response()->json($user);
             $user->avatar = $avatarPath;
         }
         
-        // Update basic details
+        // Update user details
         $user->update($request->only([
             'name', 'email', 'phone', 'address', 
-            'emergency_contact_name', 'emergency_contact_phone'
+            'emergency_contact_name', 'emergency_contact_phone',
+            'sex', 'date_of_birth'
         ]));
         
         return response()->json([
             'message' => 'Profile updated successfully',
-            'user' => $user->fresh()
+            'user' => $user->fresh()->load('roles', 'company')
         ]);
     }
     
