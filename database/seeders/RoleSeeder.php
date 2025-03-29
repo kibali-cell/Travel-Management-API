@@ -9,7 +9,7 @@ class RoleSeeder extends Seeder
 {
     public function run()
     {
-        // Create Super Admin role
+        
         Role::updateOrCreate(
             ['slug' => 'super_admin'],
             [
@@ -19,7 +19,6 @@ class RoleSeeder extends Seeder
             ]
         );
 
-        // Create Travel Admin role
         Role::updateOrCreate(
             ['slug' => 'travel_admin'],
             [
@@ -29,7 +28,7 @@ class RoleSeeder extends Seeder
             ]
         );
 
-        // Create Employee role
+        
         Role::updateOrCreate(
             ['slug' => 'employee'],
             [

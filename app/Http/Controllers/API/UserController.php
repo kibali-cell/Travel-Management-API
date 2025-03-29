@@ -11,21 +11,26 @@ use Illuminate\Support\Facades\Validator;
 
 class UserController extends Controller
 {
+
     public function index(Request $request)
     {
-        // Only allow admins to view all users, or filter by company
         $user = $request->user();
-        
-        if ($user->isAdmin()) {
+
+        if ($user->hasRole('super_admin')) {
+            // Super admin gets all users across companies
+            $users = User::with('roles', 'company')->get();
+        } elseif ($user->hasRole('travel_admin') || $user->hasRole('employee')) {
+            // Travel admin and employee get only users from their company
             $users = User::with('roles', 'company')
                 ->where('company_id', $user->company_id)
                 ->get();
-            
-            return response()->json(['users' => $users]);
+        } else {
+            return response()->json(['message' => 'Unauthorized'], 403);
         }
-        
-        return response()->json(['message' => 'Unauthorized'], 403);
+
+        return response()->json(['users' => $users]);
     }
+
 
     public function store(Request $request)
     {
