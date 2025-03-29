@@ -36,24 +36,23 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Employee Routes (Accessible to employee, travel_admin, and super_admin)
     Route::middleware('role:employee,travel_admin,super_admin')->group(function () {
-        // Profile Management
+        
         Route::get('/profile', [UserProfileController::class, 'show']);
         Route::put('/profile', [UserProfileController::class, 'update']);
         Route::put('/profile/password', [UserProfileController::class, 'updatePassword']);
         Route::put('/profile/language', [UserProfileController::class, 'updateLanguage']);
         Route::put('/profile/notifications', [UserProfileController::class, 'updateNotificationPreferences']);
 
-        // Trip, Booking, and Expense Management
         Route::apiResource('trips', TripController::class);
         Route::apiResource('bookings', BookingController::class);
         Route::apiResource('expenses', ExpenseController::class);
 
-        // Booking Flights and Hotels
+       
         Route::post('/flights/book', [FlightController::class, 'book']);
         Route::post('/hotels/book', [HotelController::class, 'book']);
         Route::get('/hotels/offers', [HotelController::class, 'getOffersByHotelIds']);
 
-        // Notifications
+      
         Route::post('/notifications/send', [NotificationController::class, 'sendEmail']);
 
         // Expose the user listing route (GET /users) so that employees can see users from their company.
@@ -62,17 +61,17 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Travel Admin Routes (Accessible to travel_admin and super_admin)
     Route::middleware('role:travel_admin|super_admin')->group(function () {
-        // Policy Management
+      
         Route::apiResource('policies', PolicyController::class);
 
-        // Approval Management
+      
         Route::post('/approvals', [ApprovalController::class, 'store']);
         Route::apiResource('approvals', ApprovalController::class)->only(['update']);
 
-        // Company Settings (Partial Access for Travel Admins)
+      
         Route::put('companies/{company}/settings', [CompanyController::class, 'updateSettings']);
 
-        // User Management (Create, Update, Delete, and Show user details)
+        
         Route::post('/users', [UserController::class, 'store']);
         Route::put('/users/{user}', [UserController::class, 'update']);
         Route::delete('/users/{user}', [UserController::class, 'destroy']);
@@ -81,7 +80,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Super Admin Routes (Accessible only to super_admin)
     Route::middleware('role:super_admin')->group(function () {
-        // Company and Department Management
+        
         Route::apiResource('companies', CompanyController::class);
         Route::apiResource('departments', DepartmentController::class);
 

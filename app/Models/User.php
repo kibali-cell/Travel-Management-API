@@ -78,7 +78,7 @@ class User extends Authenticatable
         return $this->hasMany(User::class, 'manager_id');
     }
 
-    // Add this method to assign a role
+    
     public function assignRole($role)
     {
         if (is_string($role)) {

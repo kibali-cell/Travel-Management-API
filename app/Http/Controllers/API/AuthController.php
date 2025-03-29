@@ -41,16 +41,16 @@ class AuthController extends Controller
                 'company_id' => $company->id,
             ]);
     
-            // Ensure the role exists with both name and slug
-            $displayName = ucwords(str_replace('_', ' ', $request->role)); // e.g., "Travel Admin"
+            
+            $displayName = ucwords(str_replace('_', ' ', $request->role)); 
             $role = Role::firstOrCreate(
                 ['slug' => $request->role],
                 ['name' => $displayName, 'slug' => $request->role, 'description' => "$displayName role"]
             );
     
-            // Assign the role and log the result
+            
             $user->assignRole($role);
-            $user->refresh(); // Ensure the roles relationship is reloaded
+            $user->refresh(); 
             $assignedRoles = $user->roles->pluck('name')->toArray();
             \Log::info('Assigned role to user', [
                 'user_id' => $user->id,
@@ -58,7 +58,7 @@ class AuthController extends Controller
                 'roles_after_assignment' => $assignedRoles,
             ]);
     
-            // Check if the role was actually assigned
+            
             if (empty($assignedRoles)) {
                 \Log::error('Failed to assign role to user', [
                     'user_id' => $user->id,
