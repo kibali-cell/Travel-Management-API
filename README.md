@@ -198,4 +198,4 @@ Contributions, issues, and feature requests are welcome!
 
 ## 📧 Contact
 
-For any questions or support, please contact [your-email@example.com](mailto:jonasdeo02@gmail.com)
+For any questions or support, please contact [jonasdeo02@gmail.com](mailto:jonasdeo02@gmail.com)
