@@ -78,6 +78,10 @@ class User extends Authenticatable
         return $this->hasMany(User::class, 'manager_id');
     }
 
+    public function department()
+    {
+        return $this->belongsTo(Department::class);
+    }
     
     public function assignRole($role)
     {

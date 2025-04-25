@@ -18,10 +18,10 @@ class UserController extends Controller
 
         if ($user->hasRole('super_admin')) {
             // Super admin gets all users across companies
-            $users = User::with('roles', 'company')->get();
+            $users = User::with('roles', 'company', 'department')->get();
         } elseif ($user->hasRole('travel_admin') || $user->hasRole('employee')) {
             // Travel admin and employee get only users from their company
-            $users = User::with('roles', 'company')
+            $users = User::with('roles', 'company', 'department')
                 ->where('company_id', $user->company_id)
                 ->get();
         } else {
@@ -44,17 +44,19 @@ class UserController extends Controller
             'email' => 'required|string|email|max:255|unique:users',
             'password' => 'required|string|min:8',
             'role' => 'required|in:admin,employee',
+            'department_id' => 'required|exists:departments,id',
         ]);
-
+        
         if ($validator->fails()) {
             return response()->json(['errors' => $validator->errors()], 422);
         }
-
+        
         $user = User::create([
             'name' => $request->name,
             'email' => $request->email,
             'password' => Hash::make($request->password),
-            'company_id' => $request->user()->company_id, // Same company as admin
+            'company_id' => $request->user()->company_id,
+            'department_id' => $request->department_id,
         ]);
 
         $role = Role::where('slug', $request->role)->first();

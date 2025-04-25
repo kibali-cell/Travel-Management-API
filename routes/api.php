@@ -34,6 +34,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
+    Route::apiResource('departments', DepartmentController::class);
+
     // Employee Routes (Accessible to employee, travel_admin, and super_admin)
     Route::middleware('role:employee,travel_admin,super_admin')->group(function () {
         
@@ -54,6 +56,7 @@ Route::middleware('auth:sanctum')->group(function () {
 
       
         Route::post('/notifications/send', [NotificationController::class, 'sendEmail']);
+        
 
         // Expose the user listing route (GET /users) so that employees can see users from their company.
         Route::get('/users', [UserController::class, 'index']);
@@ -67,7 +70,6 @@ Route::middleware('auth:sanctum')->group(function () {
       
         Route::post('/approvals', [ApprovalController::class, 'store']);
         Route::apiResource('approvals', ApprovalController::class)->only(['update']);
-
       
         Route::put('companies/{company}/settings', [CompanyController::class, 'updateSettings']);
 
@@ -82,7 +84,6 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::middleware('role:super_admin')->group(function () {
         
         Route::apiResource('companies', CompanyController::class);
-        Route::apiResource('departments', DepartmentController::class);
 
         // Test Routes
         Route::get('/test/amadeus', [ApiTestController::class, 'testAmadeus']);
