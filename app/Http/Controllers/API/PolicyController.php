@@ -28,30 +28,57 @@ class PolicyController extends Controller
      */
     public function store(Request $request)
     {
-        // Get the authenticated user
         $user = $request->user();
 
-        // Check if the user is a travel_admin and restrict company_id to their own
         if ($user->hasRole('travel_admin') && $user->company_id !== $request->input('company_id')) {
             return response()->json(['message' => 'You can only create policies for your own company'], 403);
         }
 
+        $existingPolicy = Policy::where('company_id', $request->input('company_id'))->first();
+        if ($existingPolicy) {
+            // Updates existing policy
+            $validator = Validator::make($request->all(), [
+                'name' => 'required|string|max:255',
+                'company_id' => 'required|exists:companies,id',
+                'flight_dynamic_pricing' => 'boolean',
+                'flight_price_threshold_percent' => 'nullable|integer|min:0|max:100',
+                'flight_max_amount' => 'nullable|numeric|min:0',
+                'flight_advance_booking_days' => 'nullable|integer|min:0',
+                'economy_class' => 'nullable|string|in:Always allowed,0-3 hour flights,3-6 hour flights,6-10 hour flights,10+ hour flights',
+                'premium_economy_class' => 'nullable|string|in:Always allowed,0-3 hour flights,3-6 hour flights,6-10 hour flights,10+ hour flights',
+                'business_class' => 'nullable|string|in:Always allowed,0-3 hour flights,3-6 hour flights,6-10 hour flights,10+ hour flights',
+                'first_class' => 'nullable|string|in:Always allowed,0-3 hour flights,3-6 hour flights,6-10 hour flights,10+ hour flights',
+                'hotel_dynamic_pricing' => 'boolean',
+                'hotel_price_threshold_percent' => 'nullable|integer|min:0|max:100',
+                'hotel_max_amount' => 'nullable|numeric|min:0',
+                'hotel_advance_booking_days' => 'nullable|integer|min:0',
+                'hotel_max_star_rating' => 'nullable|integer|min:1|max:5',
+            ]);
+
+            if ($validator->fails()) {
+                return response()->json(['errors' => $validator->errors()], 422);
+            }
+
+            $existingPolicy->update($request->all());
+            return response()->json($existingPolicy);
+        }
+
         $validator = Validator::make($request->all(), [
             'name' => 'required|string|max:255',
-            'company_id' => 'required|exists:companies,id',
-            'flight_dynamic_pricing' => 'boolean',
-            'flight_price_threshold_percent' => 'nullable|integer|min:0|max:100',
-            'flight_max_amount' => 'nullable|numeric|min:0',
-            'flight_advance_booking_days' => 'nullable|integer|min:0',
-            'economy_class' => 'nullable|string|in:Always allowed,0-3 hour flights,3-6 hour flights,6-10 hour flights,10+ hour flights',
-            'premium_economy_class' => 'nullable|string|in:Always allowed,0-3 hour flights,3-6 hour flights,6-10 hour flights,10+ hour flights',
-            'business_class' => 'nullable|string|in:Always allowed,0-3 hour flights,3-6 hour flights,6-10 hour flights,10+ hour flights',
-            'first_class' => 'nullable|string|in:Always allowed,0-3 hour flights,3-6 hour flights,6-10 hour flights,10+ hour flights',
-            'hotel_dynamic_pricing' => 'boolean',
-            'hotel_price_threshold_percent' => 'nullable|integer|min:0|max:100',
-            'hotel_max_amount' => 'nullable|numeric|min:0',
-            'hotel_advance_booking_days' => 'nullable|integer|min:0',
-            'hotel_max_star_rating' => 'nullable|integer|min:1|max:5',
+                'company_id' => 'required|exists:companies,id',
+                'flight_dynamic_pricing' => 'boolean',
+                'flight_price_threshold_percent' => 'nullable|integer|min:0|max:100',
+                'flight_max_amount' => 'nullable|numeric|min:0',
+                'flight_advance_booking_days' => 'nullable|integer|min:0',
+                'economy_class' => 'nullable|string|in:Always allowed,0-3 hour flights,3-6 hour flights,6-10 hour flights,10+ hour flights',
+                'premium_economy_class' => 'nullable|string|in:Always allowed,0-3 hour flights,3-6 hour flights,6-10 hour flights,10+ hour flights',
+                'business_class' => 'nullable|string|in:Always allowed,0-3 hour flights,3-6 hour flights,6-10 hour flights,10+ hour flights',
+                'first_class' => 'nullable|string|in:Always allowed,0-3 hour flights,3-6 hour flights,6-10 hour flights,10+ hour flights',
+                'hotel_dynamic_pricing' => 'boolean',
+                'hotel_price_threshold_percent' => 'nullable|integer|min:0|max:100',
+                'hotel_max_amount' => 'nullable|numeric|min:0',
+                'hotel_advance_booking_days' => 'nullable|integer|min:0',
+                'hotel_max_star_rating' => 'nullable|integer|min:1|max:5',
         ]);
 
         if ($validator->fails()) {
@@ -117,8 +144,6 @@ class PolicyController extends Controller
      */
     public function destroy($id)
     {
-        $policy = Policy::findOrFail($id);
-        $policy->delete();
-        return response()->json(null, 204);
+        return response()->json(['message' => 'Policy deletion is not allowed'], 403);
     }
 }
