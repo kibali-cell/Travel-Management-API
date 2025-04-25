@@ -34,11 +34,8 @@ Route::middleware('auth:sanctum')->group(function () {
     Route::post('/logout', [AuthController::class, 'logout']);
     Route::get('/user', [AuthController::class, 'user']);
 
-    Route::apiResource('departments', DepartmentController::class);
-
     // Employee Routes (Accessible to employee, travel_admin, and super_admin)
     Route::middleware('role:employee,travel_admin,super_admin')->group(function () {
-        
         Route::get('/profile', [UserProfileController::class, 'show']);
         Route::put('/profile', [UserProfileController::class, 'update']);
         Route::put('/profile/password', [UserProfileController::class, 'updatePassword']);
@@ -49,31 +46,25 @@ Route::middleware('auth:sanctum')->group(function () {
         Route::apiResource('bookings', BookingController::class);
         Route::apiResource('expenses', ExpenseController::class);
 
-       
         Route::post('/flights/book', [FlightController::class, 'book']);
         Route::post('/hotels/book', [HotelController::class, 'book']);
         Route::get('/hotels/offers', [HotelController::class, 'getOffersByHotelIds']);
 
-      
         Route::post('/notifications/send', [NotificationController::class, 'sendEmail']);
-        
 
-        // Expose the user listing route (GET /users) so that employees can see users from their company.
         Route::get('/users', [UserController::class, 'index']);
     });
 
     // Travel Admin Routes (Accessible to travel_admin and super_admin)
-    Route::middleware('role:travel_admin|super_admin')->group(function () {
-      
+    Route::middleware('role:travel_admin,super_admin')->group(function () { // Changed | to ,
         Route::apiResource('policies', PolicyController::class);
 
-      
         Route::post('/approvals', [ApprovalController::class, 'store']);
         Route::apiResource('approvals', ApprovalController::class)->only(['update']);
-      
-        Route::put('companies/{company}/settings', [CompanyController::class, 'updateSettings']);
 
-        
+        Route::put('companies/{company}/settings', [CompanyController::class, 'updateSettings']);
+        Route::apiResource('departments', DepartmentController::class);
+
         Route::post('/users', [UserController::class, 'store']);
         Route::put('/users/{user}', [UserController::class, 'update']);
         Route::delete('/users/{user}', [UserController::class, 'destroy']);
@@ -82,10 +73,8 @@ Route::middleware('auth:sanctum')->group(function () {
 
     // Super Admin Routes (Accessible only to super_admin)
     Route::middleware('role:super_admin')->group(function () {
-        
         Route::apiResource('companies', CompanyController::class);
 
-        // Test Routes
         Route::get('/test/amadeus', [ApiTestController::class, 'testAmadeus']);
         Route::get('/test/travelduqa', [ApiTestController::class, 'testTravelDuqa']);
     });
