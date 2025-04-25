@@ -1,66 +1,201 @@
-<p align="center"><a href="https://laravel.com" target="_blank"><img src="https://raw.githubusercontent.com/laravel/art/master/logo-lockup/5%20SVG/2%20CMYK/1%20Full%20Color/laravel-logolockup-cmyk-red.svg" width="400" alt="Laravel Logo"></a></p>
+# Travel Management API
 
-<p align="center">
-<a href="https://github.com/laravel/framework/actions"><img src="https://github.com/laravel/framework/workflows/tests/badge.svg" alt="Build Status"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/dt/laravel/framework" alt="Total Downloads"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/v/laravel/framework" alt="Latest Stable Version"></a>
-<a href="https://packagist.org/packages/laravel/framework"><img src="https://img.shields.io/packagist/l/laravel/framework" alt="License"></a>
-</p>
+A comprehensive travel management solution built with Laravel and MySQL, providing streamlined business travel booking, expense tracking, and policy management.
 
-## About Laravel
+## 🌟 Features
 
-Laravel is a web application framework with expressive, elegant syntax. We believe development must be an enjoyable and creative experience to be truly fulfilling. Laravel takes the pain out of development by easing common tasks used in many web projects, such as:
+- **Authentication & User Management**
+  - Role-based access control (Employee, Travel Admin, Super Admin)
+  - User registration and profile management
+  - Password reset functionality
 
-- [Simple, fast routing engine](https://laravel.com/docs/routing).
-- [Powerful dependency injection container](https://laravel.com/docs/container).
-- Multiple back-ends for [session](https://laravel.com/docs/session) and [cache](https://laravel.com/docs/cache) storage.
-- Expressive, intuitive [database ORM](https://laravel.com/docs/eloquent).
-- Database agnostic [schema migrations](https://laravel.com/docs/migrations).
-- [Robust background job processing](https://laravel.com/docs/queues).
-- [Real-time event broadcasting](https://laravel.com/docs/broadcasting).
+- **Travel Booking**
+  - Flight search and booking via TravelDuqa API
+  - Hotel search and booking via Amadeus API
+  - Car rental services
 
-Laravel is accessible, powerful, and provides tools required for large, robust applications.
+- **Travel Management**
+  - Trip planning and organization
+  - Booking management
+  - Expense tracking and reporting
+  - Policy compliance checking
 
-## Learning Laravel
+- **Admin Features**
+  - Company and department management
+  - Travel policy creation and enforcement
+  - Approval workflows for out-of-policy requests
+  - User management and permissions
 
-Laravel has the most extensive and thorough [documentation](https://laravel.com/docs) and video tutorial library of all modern web application frameworks, making it a breeze to get started with the framework.
+- **Additional Features**
+  - Multi-language support
+  - Notification preferences
+  - Emergency contact management
+  - Analytics for travel spending
 
-You may also try the [Laravel Bootcamp](https://bootcamp.laravel.com), where you will be guided through building a modern Laravel application from scratch.
+## 🚀 Getting Started
 
-If you don't feel like reading, [Laracasts](https://laracasts.com) can help. Laracasts contains thousands of video tutorials on a range of topics including Laravel, modern PHP, unit testing, and JavaScript. Boost your skills by digging into our comprehensive video library.
+### Prerequisites
 
-## Laravel Sponsors
+- PHP 8.0+
+- Composer
+- MySQL
+- Laravel 9+
 
-We would like to extend our thanks to the following sponsors for funding Laravel development. If you are interested in becoming a sponsor, please visit the [Laravel Partners program](https://partners.laravel.com).
+### Installation
 
-### Premium Partners
+1. Clone the repository
+   ```
+   git clone https://github.com/yourusername/travel-management-api.git
+   cd travel-management-api
+   ```
 
-- **[Vehikl](https://vehikl.com/)**
-- **[Tighten Co.](https://tighten.co)**
-- **[WebReinvent](https://webreinvent.com/)**
-- **[Kirschbaum Development Group](https://kirschbaumdevelopment.com)**
-- **[64 Robots](https://64robots.com)**
-- **[Curotec](https://www.curotec.com/services/technologies/laravel/)**
-- **[Cyber-Duck](https://cyber-duck.co.uk)**
-- **[DevSquad](https://devsquad.com/hire-laravel-developers)**
-- **[Jump24](https://jump24.co.uk)**
-- **[Redberry](https://redberry.international/laravel/)**
-- **[Active Logic](https://activelogic.com)**
-- **[byte5](https://byte5.de)**
-- **[OP.GG](https://op.gg)**
+2. Install dependencies
+   ```
+   composer install
+   ```
 
-## Contributing
+3. Set up environment variables
+   ```
+   cp .env.example .env
+   ```
+   
+4. Configure your database and API keys in `.env`
+   ```
+   DB_CONNECTION=mysql
+   DB_HOST=127.0.0.1
+   DB_PORT=3306
+   DB_DATABASE=your_database
+   DB_USERNAME=your_username
+   DB_PASSWORD=your_password
+   
+   AMADEUS_API_KEY=your_amadeus_key
+   AMADEUS_API_SECRET=your_amadeus_secret
+   
+   TRAVELDUQA_API_KEY=your_travelduqa_key
+   ```
 
-Thank you for considering contributing to the Laravel framework! The contribution guide can be found in the [Laravel documentation](https://laravel.com/docs/contributions).
+5. Generate application key
+   ```
+   php artisan key:generate
+   ```
 
-## Code of Conduct
+6. Run migrations
+   ```
+   php artisan migrate
+   ```
 
-In order to ensure that the Laravel community is welcoming to all, please review and abide by the [Code of Conduct](https://laravel.com/docs/contributions#code-of-conduct).
+7. Seed the database (optional)
+   ```
+   php artisan db:seed
+   ```
 
-## Security Vulnerabilities
+8. Start the development server
+   ```
+   php artisan serve
+   ```
 
-If you discover a security vulnerability within Laravel, please send an e-mail to Taylor Otwell via [taylor@laravel.com](mailto:taylor@laravel.com). All security vulnerabilities will be promptly addressed.
+## 📚 API Documentation
 
-## License
+### Authentication Endpoints
 
-The Laravel framework is open-sourced software licensed under the [MIT license](https://opensource.org/licenses/MIT).
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| POST | `/api/login` | User login |
+| POST | `/api/register` | User registration |
+| POST | `/api/logout` | User logout (requires auth) |
+| POST | `/api/password/email` | Send password reset email |
+| POST | `/api/password/reset` | Reset password |
+
+### User Profile Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/profile` | Get user profile |
+| PUT | `/api/profile` | Update user profile |
+| PUT | `/api/profile/password` | Update password |
+| PUT | `/api/profile/language` | Update language preference |
+| PUT | `/api/profile/notifications` | Update notification preferences |
+
+### Travel Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/flights/search` | Search for flights |
+| POST | `/api/flights/book` | Book a flight |
+| GET | `/api/hotels/search` | Search hotels by city |
+| GET | `/api/hotels/autocomplete` | Autocomplete hotel search |
+| POST | `/api/hotels/book` | Book a hotel |
+
+### Trip Management Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/trips` | List all trips |
+| POST | `/api/trips` | Create a new trip |
+| GET | `/api/trips/{id}` | Get trip details |
+| PUT | `/api/trips/{id}` | Update trip details |
+| DELETE | `/api/trips/{id}` | Delete a trip |
+
+### Expense Management Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/expenses` | List all expenses |
+| POST | `/api/expenses` | Create a new expense |
+| GET | `/api/expenses/{id}` | Get expense details |
+| PUT | `/api/expenses/{id}` | Update expense details |
+| DELETE | `/api/expenses/{id}` | Delete an expense |
+
+### Admin Endpoints
+
+| Method | Endpoint | Description |
+|--------|----------|-------------|
+| GET | `/api/users` | List all users |
+| POST | `/api/users` | Create a new user |
+| GET | `/api/users/{id}` | Get user details |
+| PUT | `/api/users/{id}` | Update user details |
+| DELETE | `/api/users/{id}` | Delete a user |
+| GET | `/api/policies` | List all policies |
+| POST | `/api/policies` | Create a new policy |
+| GET | `/api/companies` | List all companies (super admin) |
+| POST | `/api/companies` | Create a new company (super admin) |
+
+## 🔒 Role-Based Access Control
+
+The API implements three user roles:
+
+1. **Employee/Traveler**
+   - Can manage their profile
+   - Can create and manage trips
+   - Can create and track expenses
+   - Can view company policies
+
+2. **Travel Admin**
+   - All Employee permissions
+   - Can manage users within their company
+   - Can create and manage travel policies
+   - Can approve/deny travel requests
+   - Can update company settings
+
+3. **Super Admin**
+   - All Travel Admin permissions
+   - Can manage multiple companies
+   - Can manage departments
+   - Can access system testing endpoints
+
+## 🔄 External API Integrations
+
+- **TravelDuqa API**: Used for flight search and booking
+- **Amadeus API**: Used for hotel search and booking
+
+## 📝 License
+
+[MIT License](LICENSE)
+
+## 🤝 Contributing
+
+Contributions, issues, and feature requests are welcome!
+
+## 📧 Contact
+
+For any questions or support, please contact [jonasdeo02@gmail.com](mailto:jonasdeo02@gmail.com)
